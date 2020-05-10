@@ -1,0 +1,256 @@
+module lcd_char(
+input clk_50M,
+input rstn,
+
+output lcd_dclk,
+output lcd_hsync,
+output lcd_vsync,
+output [7:0] lcd_r,
+output [7:0] lcd_g,
+output [7:0] lcd_b,
+output lcd_de
+
+);
+//-----------------------------------------------------------// 
+// 水平扫描参数的设定480*272 60Hz LCD 
+//-----------------------------------------------------------// 
+parameter LinePeriod =525; 
+//行周期数
+ parameter H_SyncPulse=41; 
+//行同步脉冲（Sync a）
+ parameter H_BackPorch=2; 
+//显示后沿（Back porch b）
+ parameter H_ActivePix=480;
+ //显示时序段（Display interval c） p
+ parameter H_FrontPorch=2; 
+ 
+ parameter Hde_start=43;
+ parameter Hde_end=523;
+//-----------------------------------------------------------// 
+// 垂直扫描参数的设定480*272 60Hz LCD 
+//-----------------------------------------------------------// 
+parameter FramePeriod =286; 
+//列周期数
+ parameter V_SyncPulse=10; 
+ //列同步脉冲（Sync o） 
+ parameter V_BackPorch=2; 
+ //显示后沿（Back porch p） 
+ parameter V_ActivePix=272; 
+ //显示时序段（Display interval q） 
+ parameter V_FrontPorch=2; 
+ parameter Vde_start=12;
+ parameter Vde_end=284;
+ wire lcd_clk;
+reg[10 : 0] x_cnt;
+reg[9 : 0] y_cnt;
+reg hsync_r; 
+reg vsync_r;
+reg hsync_de; 
+reg vsync_de;
+assign lcd_dclk=~lcd_clk;
+assign lcd_hsync = hsync_r; 
+assign lcd_vsync = vsync_r;
+assign lcd_de = hsync_de & vsync_de; 
+
+
+//---------------------------------------------------------------- //
+//////
+// 水平扫描计数 
+//---------------------------------------------------------------- 
+always @ (posedge lcd_clk) 
+begin
+if(~rstn) x_cnt <= 1; 
+else if(x_cnt == LinePeriod) x_cnt <= 1; 
+else x_cnt <= x_cnt+ 1;
+end
+//----------------------------------------------------------------
+////////
+// 水平扫描信号hsync产生 
+//---------------------------------------------------------------- 
+always@(posedge lcd_clk) 
+begin 
+if(~rstn) hsync_r <= 1'b1; 
+else if(x_cnt == 1) hsync_r <= 1'b0; 
+//产生hsync信号
+else if(x_cnt == H_SyncPulse) hsync_r <= 1'b1;
+		
+if(~rstn) hsync_de <= 1'b0; 
+else if(x_cnt == Hde_start) hsync_de <= 1'b1; //产生hsync_de信号 
+else if(x_cnt == Hde_end) hsync_de <= 1'b0;	
+end
+//---------------------------------------------------------------- 
+////////
+// 垂直扫描计数 
+//---------------------------------------------------------------- 
+always @ (posedge lcd_clk) 
+if(~rstn) y_cnt <= 1; 
+else if(y_cnt == FramePeriod) y_cnt <= 1; 
+else if(x_cnt == LinePeriod) y_cnt <= y_cnt+1; 
+//---------------------------------------------------------------- 
+///////
+/// 垂直扫描信号vsync产生 
+//---------------------------------------------------------------- 
+always @ (posedge lcd_clk) 
+begin if(~rstn) vsync_r <= 1'b1; 
+else if(y_cnt == 1) vsync_r <= 1'b0; 
+//产生vsync信号 
+else if(y_cnt == V_SyncPulse) vsync_r <= 1'b1;
+if(~rstn) vsync_de <= 1'b0; 
+else if(y_cnt == Vde_start) vsync_de <= 1'b1; //产生vsync_de信号 
+else if(y_cnt == Vde_end) vsync_de <= 1'b0;
+end
+
+parameter pos_x=300;
+parameter pos_y=100;
+
+parameter Pos_X2 = 400; 
+//第二个字在VGA上显示的X坐标 
+parameter Pos_Y2 = 100; 
+//第二个字在VGA上显示的Y坐标
+//---------------------------------------------------------------- 
+////////// ROM读字地址产生模块 
+//---------------------------------------------------------------- 
+reg[4:0] x1_count; 
+reg[4:0] x2_count; 
+reg[10:0] word1_rom_addra; 
+reg[10:0] word2_rom_addra; 
+wire y_word1; 
+wire x_word1; 
+wire y_word2; 
+wire x_word2; 
+wire pre_x_word1; 
+wire pre_x_word2; 
+assign x_word1=(x_cnt >= pos_x && x_cnt < pos_x + 32) ? 1'b1 : 1'b0; 
+//第一个字体的X坐标的位置显示范围,字体宽度为56 
+assign y_word1=(y_cnt >= pos_y && y_cnt < pos_y + 65) ? 1'b1 : 1'b0; 
+//第一个字体的Y坐标的位置显示范围,字体高度为75 
+assign pre_x_word1=(x_cnt >= pos_x - 2 && x_cnt < pos_x + 30) ? 1'b1 : 1'b0;
+//提前2个时钟准备数据（ROM的数据输出延迟地址2个时钟周期）
+assign x_word2=(x_cnt >= Pos_X2 && x_cnt < Pos_X2 + 56) ? 1'b1 : 1'b0; 
+//第二个字体的X坐标的位置显示范围,字体宽度为56 
+assign y_word2=(y_cnt >= Pos_Y2 && y_cnt < Pos_Y2 + 56) ? 1'b1 : 1'b0; 
+//第二个字体的Y坐标的位置显示范围,字体高度为75 
+assign pre_x_word2=(x_cnt >= Pos_X2 - 2 && x_cnt < Pos_X2 + 54) ? 1'b1 : 1'b0; 
+//提前2个时钟准备数据（ROM的数据输出延迟地址2个时钟周期）
+
+always @(posedge lcd_clk) 
+begin 
+if (~rstn) 
+begin x1_count<=0; 
+x2_count<=0;
+ word1_rom_addra<=0; 
+ //第一个字体在ROM中的位置 
+ word2_rom_addra<=260; 
+ //第二个字体在ROM中的位置 
+ end 
+ else 
+ begin 
+ if (vsync_r==1'b0) 
+ begin word1_rom_addra<=0; 
+ //第一个字体在ROM中的位置 
+ word2_rom_addra<=260; 
+ //第二个字体在ROM中的位置 
+ x1_count<=0; 
+ x2_count<=0; 
+ end 
+ else if((y_word1==1'b1) && (pre_x_word1==1'b1)) begin 
+ //读第一个字体，提前2个时钟产生地址 
+ if (x1_count==7) begin 
+ //ROM里的每个字节显示8个像数，8个时钟ROM地址加1 
+ word1_rom_addra<=word1_rom_addra+1'b1; 
+ //ROM地址加1 
+ x1_count<=0; 
+ end 
+ else 
+ begin 
+ x1_count<=x1_count+1'b1; 
+ word1_rom_addra<=word1_rom_addra; 
+ end 
+ end 
+ else if((y_word2==1'b1) && (pre_x_word2==1'b1)) begin 
+ //读第二个字体，提前2个时钟产生地址 
+ if (x2_count==7) begin 
+ //ROM里的每个字节显示8个像数，8个时钟ROM地址加1 
+ word2_rom_addra<=word2_rom_addra+1'b1; 
+ //ROM地址加1 
+ x2_count<=0; 
+ end 
+ else begin x2_count<=x2_count+1'b1;
+ word2_rom_addra<=word2_rom_addra;
+ end
+ end 
+ else 
+ begin 
+ x1_count<=0; 
+ x2_count<=0; 
+ word1_rom_addra<=word1_rom_addra; 
+ word2_rom_addra<=word2_rom_addra; 
+ end 
+ end 
+ end
+ 
+ ////////// 延迟2个节拍,因为ROM的数据输出延迟地址2个时钟周期 
+ //---------------------------------------------------------------- 
+ reg [4:0] x1_bit_count; 
+ reg [4:0] x2_bit_count; 
+ always @(posedge lcd_clk) 
+ begin 
+ if (~rstn) 
+ begin x1_bit_count<=7; x2_bit_count<=7; end 
+ else 
+ begin 
+ if (vsync_r==1'b0) begin
+ x1_bit_count<=7; x2_bit_count<=7; 
+ end 
+ else if((y_word1==1'b1) && (x_word1==1'b1))
+ begin 
+ //读第一个字体，提前2个时钟产生地址 
+ if (x1_bit_count==0) x1_bit_count<=7; 
+ else x1_bit_count<=x1_bit_count-1'b1; 
+ end 
+ else if((y_word2==1'b1) && (x_word2==1'b1)) begin 
+ //读第二个字体，提前2个时钟产生地址 
+ if (x2_bit_count==0) 
+ //ROM里的每个字节显示8个像数，8个时钟ROM地址加1 
+ x2_bit_count<=7; 
+ else x2_bit_count<=x2_bit_count-1'b1; 
+ end 
+ else begin x1_bit_count<=7; x2_bit_count<=7; end 
+ end
+ end 
+ 
+ //---------------------------------------------------------------- 
+ ////////// LCD数据输出 
+ //---------------------------------------------------------------- 
+ wire [7:0] lcd_r_w; 
+ wire [7:0] lcd_r_word1; 
+ wire [7:0] lcd_r_word2; 
+ assign lcd_r_word1 = {8{rom_data[x1_bit_count]}}; 
+ //显示单色的数据1 
+ assign lcd_r_word2 = {8{rom_data[x2_bit_count]}}; 
+ //显示单色的数据2 
+ assign lcd_r_w = (x_word1==1'b1) ? lcd_r_word1 : lcd_r_word2; 
+ 
+ //---------------------------------------------------------------- 
+ ////////// ROM实例化 
+ //---------------------------------------------------------------- 
+ wire [10:0] rom_addra; 
+ wire [7:0] rom_data; 
+ assign rom_addra=(x_word1==1'b1) ? word1_rom_addra : word2_rom_addra; //rom的地址选择
+  
+ rom_score rom_inst ( .clock(lcd_clk), // input clka 
+ 
+ .address(rom_addra), // input [10 : 0] addra 
+ 
+ .q(rom_data) // output [7 : 0] douta
+ 
+ );
+ //| ((y_word2==1'b1) && (x_word2==1'b1))
+assign lcd_r = (((y_word1==1'b1) && (x_word1==1'b1))| ((y_word2==1'b1) && (x_word2==1'b1))) ? lcd_r_w:8'b00000000;
+assign lcd_g = (hsync_de & vsync_de)?8'b00000011:8'b00000000;
+assign lcd_b = (hsync_de & vsync_de)?8'b00000011:8'b00000000;
+
+pll_9M pll(.inclk0(clk_50M), .c0(lcd_clk));
+
+endmodule
+ 

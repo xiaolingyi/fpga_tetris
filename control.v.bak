@@ -1,0 +1,29 @@
+module control(
+input clk_1k,
+input rst_n,
+input start,
+input right,
+input left,
+input down,
+input rotate,
+
+input can_move;
+input can_down;
+input clear_over;
+input isdie;
+
+output reg [3:0]action,
+output reg gen_new,
+output reg hold,
+output reg check_move,
+output reg check_down,
+output reg shift,
+output reg fix_block,
+output reg clr_row,
+output reg check_die,
+output reg game_over,
+
+);
+
+reg native_down
+ reg 

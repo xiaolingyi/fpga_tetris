@@ -1,0 +1,5 @@
+PLL_Name	sync_module:sync_module|pll_9M:pll|altpll:altpll_component|pll_9M_altpll:auto_generated|pll1
+PLLJITTER	37
+PLLSPEmax	84
+PLLSPEmin	-53
+

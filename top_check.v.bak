@@ -1,0 +1,19 @@
+module top_check(
+input clk,
+input rst_n,
+input start,
+
+output [ROW*COL-1:0]Background1,
+
+output reg gen_new_over,
+output reg check_down_over,
+output reg check_move_over,
+output reg shift_over,
+output reg fix_over,
+output reg clr_over,
+output reg check_die_over,
+
+output reg can_down,
+output reg can_move,
+output reg isdie
+);

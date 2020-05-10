@@ -1,0 +1,640 @@
+module sync_module(clk_50M,rstn,Background1,lcd_dclk,lcd_vsync,lcd_hsync,lcd_b,lcd_r,lcd_g,lcd_de);
+input clk_50M;
+input [16*10-1:0]Background1;
+
+output lcd_dclk;
+input rstn;
+output lcd_hsync;
+output lcd_vsync;
+output [7:0] lcd_r;
+output [7:0] lcd_g;
+output [7:0] lcd_b;
+output lcd_de;
+
+reg [9:0]Background[15:0];
+/*initial
+begin
+ Background[15][0]<=1;
+  Background[15][1]<=1;
+  Background[15][2]<=1;
+  Background[15][3]<=0;
+  Background[15][4]<=0;
+  Background[15][5]<=0;
+  Background[15][6]<=0;
+  Background[15][7]<=0;
+  Background[15][8]<=0;
+  Background[15][9]<=0;
+  Background[14][0]<=0;
+  Background[14][1]<=1;
+  Background[14][2]<=0;
+  Background[14][3]<=1;
+  Background[14][4]<=0;
+  Background[14][5]<=1;
+  Background[14][6]<=0;
+  Background[14][7]<=1;
+  Background[14][8]<=0;
+  Background[14][9]<=0;
+  Background[13][0]<=0;
+  Background[13][1]<=0;
+  Background[13][2]<=0;
+  Background[13][3]<=0;
+  Background[13][4]<=0;
+  Background[13][5]<=0;
+  Background[13][6]<=0;
+  Background[13][7]<=0;
+  Background[13][8]<=0;
+  Background[13][9]<=0;
+  Background[12][0]<=0;
+  Background[12][1]<=0;
+  Background[12][2]<=0;
+  Background[12][3]<=0;
+  Background[12][4]<=0;
+  Background[12][5]<=0;
+  Background[12][6]<=0;
+  Background[12][7]<=0;
+  Background[12][8]<=0;
+  Background[12][9]<=0;
+  Background[11][0]<=0;
+  Background[11][1]<=0;
+  Background[11][2]<=0;
+  Background[11][3]<=0;
+  Background[11][4]<=0;
+  Background[11][5]<=0;
+  Background[11][6]<=0;
+  Background[11][7]<=0;
+  Background[11][8]<=0;
+  Background[11][9]<=0;
+  Background[10][0]<=0;
+  Background[10][1]<=0;
+  Background[10][2]<=0;
+  Background[10][3]<=0;
+  Background[10][4]<=0;
+  Background[10][5]<=0;
+  Background[10][6]<=0;
+  Background[10][7]<=0;
+  Background[10][8]<=0;
+  Background[10][9]<=0;
+  Background[9][0]<=0;
+  Background[9][1]<=0;
+  Background[9][2]<=0;
+  Background[9][3]<=0;
+  Background[9][4]<=0;
+  Background[9][5]<=0;
+  Background[9][6]<=0;
+  Background[9][7]<=0;
+  Background[9][8]<=0;
+  Background[9][9]<=0;
+  Background[8][0]<=0;
+  Background[8][1]<=0;
+  Background[8][2]<=0;
+  Background[8][3]<=0;
+  Background[8][4]<=0;
+  Background[8][5]<=0;
+  Background[8][6]<=0;
+  Background[8][7]<=0;
+  Background[8][8]<=0;
+  Background[8][9]<=0;
+  Background[7][0]<=0;
+  Background[7][1]<=0;
+  Background[7][2]<=0;
+  Background[7][3]<=0;
+  Background[7][4]<=0;
+  Background[7][5]<=0;
+  Background[7][6]<=0;
+  Background[7][7]<=0;
+  Background[7][8]<=0;
+  Background[7][9]<=0;
+  Background[6][0]<=0;
+  Background[6][1]<=0;
+  Background[6][2]<=0;
+  Background[6][3]<=0;
+  Background[6][4]<=0;
+  Background[6][5]<=0;
+  Background[6][6]<=0;
+  Background[6][7]<=0;
+  Background[6][8]<=0;
+  Background[6][9]<=0;
+  Background[5][0]<=0;
+  Background[5][1]<=0;
+  Background[5][2]<=0;
+  Background[5][3]<=0;
+  Background[5][4]<=0;
+  Background[5][5]<=0;
+  Background[5][6]<=0;
+  Background[5][7]<=0;
+  Background[5][8]<=0;
+  Background[5][9]<=0;
+  Background[4][0]<=0;
+  Background[4][1]<=1;
+  Background[4][2]<=1;
+  Background[4][3]<=1;
+  Background[4][4]<=0;
+  Background[4][5]<=0;
+  Background[4][6]<=0;
+  Background[4][7]<=0;
+  Background[4][8]<=0;
+  Background[4][9]<=0;
+  Background[3][0]<=0;
+  Background[3][1]<=0;
+  Background[3][2]<=0;
+  Background[3][3]<=0;
+  Background[3][4]<=0;
+  Background[3][5]<=0;
+  Background[3][6]<=0;
+  Background[3][7]<=0;
+  Background[3][8]<=0;
+  Background[3][9]<=0;
+  Background[2][0]<=0;
+  Background[2][1]<=0;
+  Background[2][2]<=0;
+  Background[2][3]<=0;
+  Background[2][4]<=0;
+  Background[2][5]<=0;
+  Background[2][6]<=0;
+  Background[2][7]<=0;
+  Background[2][8]<=0;
+  Background[2][9]<=0;
+  Background[1][0]<=0;
+  Background[1][1]<=0;
+  Background[1][2]<=0;
+  Background[1][3]<=0;
+  Background[1][4]<=0;
+  Background[1][5]<=0;
+  Background[1][6]<=0;
+  Background[1][7]<=0;
+  Background[1][8]<=0;
+  Background[1][9]<=0;
+  Background[0][0]<=1;
+  Background[0][1]<=0;
+  Background[0][2]<=0;
+  Background[0][3]<=0;
+  Background[0][4]<=0;
+  Background[0][5]<=0;
+  Background[0][6]<=0;
+  Background[0][7]<=0;
+  Background[0][8]<=0;
+  Background[0][9]<=1;
+  grid<=0;
+  
+  
+end*/
+initial
+begin
+Background[0]<=Background1[9:0];
+Background[1]<=Background1[19:10];
+Background[2]<=Background1[29:20];
+Background[3]<=Background1[39:30];
+Background[4]<=Background1[49:40];
+Background[5]<=Background1[59:50];
+Background[6]<=Background1[69:60];
+Background[7]<=Background1[79:70];
+Background[8]<=Background1[89:80];
+Background[9]<=Background1[99:90];
+Background[10]<=Background1[109:100];
+Background[11]<=Background1[119:110];
+Background[12]<=Background1[129:120];
+Background[13]<=Background1[139:130];
+Background[14]<=Background1[149:140];
+Background[15]<=Background1[159:150];
+
+end
+
+parameter grid_width=10;
+//-----------------------------------------------------------// 
+// 水平扫描参数的设定480*272 60Hz LCD 
+//-----------------------------------------------------------// 
+parameter LinePeriod =525; 
+//行周期数
+ parameter H_SyncPulse=41; 
+//行同步脉冲（Sync a）
+ parameter H_BackPorch=2; 
+//显示后沿（Back porch b）
+ parameter H_ActivePix=480;
+ //显示时序段（Display interval c） p
+ parameter H_FrontPorch=2; 
+ 
+ parameter Hde_start=43;
+ parameter Hde_end=523;
+//-----------------------------------------------------------// 
+// 垂直扫描参数的设定480*272 60Hz LCD 
+//-----------------------------------------------------------// 
+parameter FramePeriod =286; 
+//列周期数
+ parameter V_SyncPulse=10; 
+ //列同步脉冲（Sync o） 
+ parameter V_BackPorch=2; 
+ //显示后沿（Back porch p） 
+ parameter V_ActivePix=272; 
+ //显示时序段（Display interval q） 
+ parameter V_FrontPorch=2; 
+ parameter Vde_start=12;
+ parameter Vde_end=284;
+ wire lcd_clk;
+reg[10 : 0] x_cnt;
+reg[9 : 0] y_cnt;
+reg[7 : 0] lcd_r_reg;
+reg[7 : 0] lcd_g_reg;
+reg[7 : 0] lcd_b_reg;
+reg hsync_r; 
+reg vsync_r;
+reg hsync_de; 
+reg vsync_de;
+assign lcd_dclk=~lcd_clk;
+assign lcd_hsync = hsync_r; 
+assign lcd_vsync = vsync_r;
+assign lcd_de = hsync_de & vsync_de; 
+assign lcd_r = (hsync_de & vsync_de)?lcd_r_reg:8'b00000000;
+assign lcd_g = (hsync_de & vsync_de)?lcd_g_reg:8'b00000000;
+assign lcd_b = (hsync_de & vsync_de)?lcd_b_reg:8'b00000000;
+//---------------------------------------------------------------- //
+//////
+// 水平扫描计数 
+//---------------------------------------------------------------- 
+always @ (posedge lcd_clk) 
+begin
+if(~rstn) x_cnt <= 1; 
+else if(x_cnt == LinePeriod) x_cnt <= 1; 
+else x_cnt <= x_cnt+ 1;
+end
+//----------------------------------------------------------------
+////////
+// 水平扫描信号hsync产生 
+//---------------------------------------------------------------- 
+always@(posedge lcd_clk) 
+begin 
+if(~rstn) hsync_r <= 1'b1; 
+else if(x_cnt == 1) hsync_r <= 1'b0; 
+//产生hsync信号
+else if(x_cnt == H_SyncPulse) hsync_r <= 1'b1;
+		
+if(~rstn) hsync_de <= 1'b0; 
+else if(x_cnt == Hde_start) hsync_de <= 1'b1; //产生hsync_de信号 
+else if(x_cnt == Hde_end) hsync_de <= 1'b0;	
+end
+//---------------------------------------------------------------- 
+////////
+// 垂直扫描计数 
+//---------------------------------------------------------------- 
+always @ (posedge lcd_clk) 
+if(~rstn) y_cnt <= 1; 
+else if(y_cnt == FramePeriod) y_cnt <= 1; 
+else if(x_cnt == LinePeriod) y_cnt <= y_cnt+1; 
+//---------------------------------------------------------------- 
+///////
+/// 垂直扫描信号vsync产生 
+//---------------------------------------------------------------- 
+always @ (posedge lcd_clk) 
+begin if(~rstn) vsync_r <= 1'b1; 
+else if(y_cnt == 1) vsync_r <= 1'b0; 
+//产生vsync信号 
+else if(y_cnt == V_SyncPulse) vsync_r <= 1'b1;
+if(~rstn) vsync_de <= 1'b0; 
+else if(y_cnt == Vde_start) vsync_de <= 1'b1; //产生vsync_de信号 
+else if(y_cnt == Vde_end) vsync_de <= 1'b0;
+end
+reg grid;
+integer i=0;
+integer j=1;
+always@(posedge lcd_clk)
+begin
+if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*0<=y_cnt&&y_cnt<Vde_start+grid_width*1)
+  grid<=Background[0][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*1<=y_cnt&&y_cnt<Vde_start+grid_width*2)
+  grid<=Background[1][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*2<=y_cnt&&y_cnt<Vde_start+grid_width*3)
+  grid<=Background[2][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*3<=y_cnt&&y_cnt<Vde_start+grid_width*4)
+  grid<=Background[3][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*4<=y_cnt&&y_cnt<Vde_start+grid_width*5)
+  grid<=Background[4][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*5<=y_cnt&&y_cnt<Vde_start+grid_width*6)
+  grid<=Background[5][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*6<=y_cnt&&y_cnt<Vde_start+grid_width*7)
+  grid<=Background[6][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*7<=y_cnt&&y_cnt<Vde_start+grid_width*8)
+  grid<=Background[7][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*8<=y_cnt&&y_cnt<Vde_start+grid_width*9)
+  grid<=Background[8][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*9<=y_cnt&&y_cnt<Vde_start+grid_width*10)
+  grid<=Background[9][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*10<=y_cnt&&y_cnt<Vde_start+grid_width*11)
+  grid<=Background[10][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*11<=y_cnt&&y_cnt<Vde_start+grid_width*12)
+  grid<=Background[11][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*12<=y_cnt&&y_cnt<Vde_start+grid_width*13)
+  grid<=Background[12][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*13<=y_cnt&&y_cnt<Vde_start+grid_width*14)
+  grid<=Background[13][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*14<=y_cnt&&y_cnt<Vde_start+grid_width*15)
+  grid<=Background[14][9];
+else if(x_cnt==Hde_start+grid_width*0&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][0];
+else if(x_cnt==Hde_start+grid_width*1&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][1];
+else if(x_cnt==Hde_start+grid_width*2&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][2];
+else if(x_cnt==Hde_start+grid_width*3&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][3];
+else if(x_cnt==Hde_start+grid_width*4&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][4];
+else if(x_cnt==Hde_start+grid_width*5&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][5];
+else if(x_cnt==Hde_start+grid_width*6&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][6];
+else if(x_cnt==Hde_start+grid_width*7&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][7];
+else if(x_cnt==Hde_start+grid_width*8&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][8];
+else if(x_cnt==Hde_start+grid_width*9&&Vde_start+grid_width*15<=y_cnt&&y_cnt<Vde_start+grid_width*16)
+  grid<=Background[15][9];
+  if(x_cnt>=Hde_start+grid_width*10||y_cnt>=Vde_start+grid_width*16)
+		grid<=0;
+end
+always@(posedge lcd_clk)
+begin
+if(grid)
+	begin
+	lcd_r_reg<=8'b0000000;
+	lcd_b_reg<=8'b1111111;
+	lcd_g_reg<=8'b0000000;
+	end
+else
+begin
+	lcd_r_reg<=8'b0000000;
+	lcd_b_reg<=8'b0000000;
+	lcd_g_reg<=8'b0000000;
+end 
+end
+pll_9M pll(.inclk0(clk_50M), .c0(lcd_clk));
+
+endmodule

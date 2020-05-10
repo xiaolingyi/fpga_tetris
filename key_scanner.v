@@ -1,0 +1,44 @@
+module key_scanner(	
+	input clk,
+	input rst_n,
+	input k,
+	output k_flag
+);
+
+
+	reg [19:0] cnt;
+	reg k_scan; // 用来存储实时扫描的按键值
+	
+	initial
+	begin
+		 cnt = 0;
+	end
+
+// 50Hz按键扫描，20ms。//k的高电平要持续20个时钟周期。
+	always @(posedge clk or negedge rst_n)
+	begin
+		 if (!rst_n) 
+			  k_scan <= 1;
+		 else
+		 begin
+			  if(cnt == 20'd199)
+			  begin   
+					cnt <= 0;
+					k_scan <= k;
+			  end
+			  else
+					cnt <= cnt + 20'd1;
+		 end
+	end
+
+// 按键下降沿判断
+	reg k_scan_r;
+	
+	always @(posedge clk)
+	begin
+		 k_scan_r <= k_scan;
+	end
+	
+	assign k_flag = k_scan_r & ~k_scan;  // 当按键被按下时flag_k = 1
+
+endmodule
